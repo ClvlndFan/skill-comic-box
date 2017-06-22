@@ -24,7 +24,6 @@ const handlers = {
     getComicList(publisher, title, date, function(result) {
       this.emit(':tell', result);
     }.bind(this));
-
   },
   'AMAZON.HelpIntent': function() {
     const speechOutput = this.t('HELP_MESSAGE');
@@ -41,7 +40,6 @@ const handlers = {
 
 function getComicList(publisher, title, date, callback) {
   var url = 'https://api.shortboxed.com/comics/v1/query';
-
   if (publisher && publisher.value) {
     url = addParam(url, 'publisher', publisher.value);
   }
@@ -53,7 +51,7 @@ function getComicList(publisher, title, date, callback) {
     // if the date includes a W (i.e. W25), translate the week into date
     if (dateVal.includes('W')) {
       var i = dateVal.indexOf('W');
-      var week = dateVal.substring(i + 1, i + 3);
+      var week = dateVal.substring(i + 1, dateVal.length);
       // comics are always released on Wednesday
       dateVal = moment().day("Wednesday").week(week).format('YYYY-MM-DD');
     }

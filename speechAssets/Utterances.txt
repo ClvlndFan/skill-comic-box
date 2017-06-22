@@ -2,7 +2,6 @@ GetComicList What's new {date}
 GetComicList new comics {date}
 GetComicList new {date}
 
-
 GetComicList {publisher} comics {date}
 GetComicList What {publisher} comics released {date}
 GetComicList What {publisher} titles released {date}
@@ -14,6 +13,7 @@ GetComicList Which {publisher} titles released {date}
 GetComicList Which {publisher} comics released {date}
 
 GetComicList {title} comics {date}
+GetComicList {title} titles {date}
 GetComicList What {title} comics released {date}
 GetComicList What are the new {title} comics
 GetComicList Did {title} release {date}
