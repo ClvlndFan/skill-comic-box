@@ -1,0 +1,25 @@
+GetComicList What's new {date}
+GetComicList new comics {date}
+GetComicList new {date}
+
+
+GetComicList {publisher} comics {date}
+GetComicList What {publisher} comics released {date}
+GetComicList What {publisher} titles released {date}
+GetComicList What {publisher} comics are out
+GetComicList What {publisher} titles are out
+GetComicList What are the new {publisher} comics
+GetComicList If any {publisher} comics released {date}
+GetComicList Which {publisher} titles released {date}
+GetComicList Which {publisher} comics released {date}
+
+GetComicList {title} comics {date}
+GetComicList What {title} comics released {date}
+GetComicList What are the new {title} comics
+GetComicList Did {title} release {date}
+GetComicList Did any {title} comics release {date}
+GetComicList Is {title} out
+GetComicList What are the new {title} comics
+GetComicList If any {title} comics released {date}
+GetComicList which {title} comics released {date}
+GetComicList which {title} comics released {date}

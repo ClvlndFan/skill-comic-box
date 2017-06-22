@@ -1,0 +1,24 @@
+{
+  "intents": [
+    {
+      "slots": [
+        {
+          "name": "publisher",
+          "type": "LIST_OF_PUBLISHERS"
+        },
+        {
+          "name": "title",
+          "type": "AMAZON.Comic"
+        },
+        {
+          "name": "date",
+          "type": "AMAZON.DATE"
+        }
+      ],
+      "intent": "GetComicList"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    }
+  ]
+}

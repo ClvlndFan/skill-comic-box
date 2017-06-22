@@ -1,0 +1,21 @@
+{
+  "name": "skill-comic-box",
+  "version": "1.0.0",
+  "description": "Alexa skill to return list of comics",
+  "author": "Ryan Forman",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "TODO"
+  },
+  "keywords": [
+    "comic box",
+    "alexa",
+    "skill"
+  ],
+  "dependencies": {
+    "alexa-sdk": "^1.0.10",
+    "https": "^1.0.0",
+    "moment": "^2.18.1"
+  }
+}
