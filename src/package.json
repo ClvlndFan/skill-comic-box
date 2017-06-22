@@ -6,7 +6,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "TODO"
+    "url": "https://github.com/ClvlndFan/skill-comic-box.git"
   },
   "keywords": [
     "comic box",
@@ -17,5 +17,6 @@
     "alexa-sdk": "^1.0.10",
     "https": "^1.0.0",
     "moment": "^2.18.1"
-  }
+  },
+  "license": "Apache-2.0"
 }
