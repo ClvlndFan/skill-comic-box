@@ -10,6 +10,7 @@ const HELP_REPROMPT = 'What can I help you with?';
 const STOP_MESSAGE = 'Goodbye!';
 const SORRY_MESSAGE = 'I am Sorry. I can not find what you are looking for.';
 const NOT_FOUND_MESSAGE = 'No titles found.';
+
 const handlers = {
   'LaunchRequest': function() {
     this.emit('GetComicList');
@@ -19,7 +20,6 @@ const handlers = {
     var publisher = this.event.request.intent.slots.publisher;
     var title = this.event.request.intent.slots.title;
     var date = this.event.request.intent.slots.date;
-
     // speak the comic list
     getComicList(publisher, title, date, function(result) {
       this.emit(':tell', result);
@@ -42,21 +42,19 @@ const handlers = {
 function getComicList(publisher, title, date, callback) {
   var url = 'https://api.shortboxed.com/comics/v1/query';
 
-  //publisher=dc
   if (publisher && publisher.value) {
     url = addParam(url, 'publisher', publisher.value);
   }
-  //title=batman
   if (title && title.value) {
     url = addParam(url, 'title', title.value);
   }
-  //release_date=2017-06-21
   if (date && date.value) {
     var dateVal = date.value;
-    // translate week into date
+    // if the date includes a W (i.e. W25), translate the week into date
     if (dateVal.includes('W')) {
       var i = dateVal.indexOf('W');
       var week = dateVal.substring(i + 1, i + 3);
+      // comics are always released on Wednesday
       dateVal = moment().day("Wednesday").week(week).format('YYYY-MM-DD');
     }
     url = addParam(url, 'release_date', dateVal);
@@ -80,26 +78,29 @@ function getComicList(publisher, title, date, callback) {
       // api didn't return comics (api failed)
       else if (!apiResponseObj.comics) {
         callback(SORRY_MESSAGE);
-      } else {
+      }
+      // valid api response
+      else {
         var comicArray = apiResponseObj.comics;
         var comicTitleArray = [];
+        // iterate through the comic list, grabbing just the titles
         for (var i = 0; i < comicArray.length; i++) {
           var comicTitle = comicArray[i].title;
-          // only get 1st print comics. no TPBs, postcards, merchandise, or additional printings.
+          // only get comics with issues numbers; no additional printings or postcards.
           if (comicTitle.includes('#') && !comicTitle.includes(' PTG') && !comicTitle.includes('POSTCARDS')) {
             // eliminate any text after the issue number
-            // this will help us eliminate variants, special covers, etc.
+            // helps eliminate variants, special covers, etc.
             var regExArray = comicTitle.match(/.*(?:#)[0-9]+/);
             // '&' is not valid SSML
             comicTitle = regExArray[0].replace('&', 'and')
             comicTitleArray.push(comicTitle);
           }
         }
-        // after removing, no comics were found
+        // after logic above, no comics were found
         if (!comicTitleArray.length || comicTitleArray.length == 0) {
           callback(NOT_FOUND_MESSAGE);
         }
-        // SUCCESS!
+        // SUCCESS!  We have a comic list.
         else {
           // sort alphabetically & remove duplicates
           comicTitleArray.sort()
@@ -120,6 +121,7 @@ var addParam = function(base, key, value) {
   return base + sep + key + '=' + value;
 }
 
+// this is where all the magic starts
 exports.handler = function(event, context) {
   const alexa = Alexa.handler(event, context);
   alexa.APP_ID = APP_ID;
