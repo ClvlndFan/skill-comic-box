@@ -5,11 +5,12 @@ const moment = require('moment');
 
 const APP_ID = 'amzn1.ask.skill.985592fe-0d43-4002-a621-4e42eafee44d';
 const SKILL_NAME = 'Comic Box';
-const HELP_MESSAGE = 'You can say what is new';
+const HELP_MESSAGE = 'You can say what comics release this week';
 const HELP_REPROMPT = 'What can I help you with?';
 const STOP_MESSAGE = 'Goodbye!';
 const SORRY_MESSAGE = 'I am Sorry. I can not find what you are looking for.';
 const NOT_FOUND_MESSAGE = 'No titles found.';
+const INVALID_DATE_MESSAGE = 'I am Sorry. I can not search with that date.';
 
 const handlers = {
   'LaunchRequest': function() {
@@ -24,6 +25,10 @@ const handlers = {
     // do date translating (i.e. convert week number)
     if (date && date.value) {
       date = translateDate(date.value);
+      // no support for searchs by month or year only, etc.
+      if (!moment(date, 'YYYY-MM-DD', true).isValid()) {
+        this.emit(':tell', INVALID_DATE_MESSAGE);
+      }
     }
     // if no date slot, default to this week
     else {
@@ -36,29 +41,35 @@ const handlers = {
     }.bind(this));
   },
   'AMAZON.HelpIntent': function() {
-    const speechOutput = this.t('HELP_MESSAGE');
-    const reprompt = this.t('HELP_MESSAGE');
-    this.emit(':ask', speechOutput, reprompt);
+    this.emit(':ask', HELP_MESSAGE, HELP_MESSAGE);
   },
   'AMAZON.CancelIntent': function() {
-    this.emit(':tell', this.t('STOP_MESSAGE'));
+    this.emit(':tell', STOP_MESSAGE);
   },
   'AMAZON.StopIntent': function() {
-    this.emit(':tell', this.t('STOP_MESSAGE'));
+    this.emit(':tell', STOP_MESSAGE);
   },
 };
 
 function getComicList(publisher, title, date, callback) {
   var url = 'https://api.shortboxed.com/comics/v1/query';
   if (publisher && publisher.value) {
-    url = addParam(url, 'publisher', publisher.value);
+    var tmpPublisher = publisher.value;
+    // replace and with & for publishers like Drawn & Quarterly
+    tmpPublisher = tmpPublisher.replace('and', '&')
+    url = addParam(url, 'publisher', tmpPublisher);
   }
   if (title && title.value) {
-    url = addParam(url, 'title', title.value);
+    var tmpTitle = title.value;
+    // replace and with & for titles like Betty & Veronica
+    tmpTitle = tmpTitle.replace('and', '&')
+    url = addParam(url, 'title', tmpTitle);
   }
   if (date) {
     url = addParam(url, 'release_date', date);
   }
+
+  console.log("url = " + url);
 
   https.get(url, function(res) {
     var apiResponse = '';
