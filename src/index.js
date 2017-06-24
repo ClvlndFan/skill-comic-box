@@ -20,9 +20,19 @@ const handlers = {
     var publisher = this.event.request.intent.slots.publisher;
     var title = this.event.request.intent.slots.title;
     var date = this.event.request.intent.slots.date;
+
+    // do date translating (i.e. convert week number)
+    if (date && date.value) {
+      date = translateDate(date.value);
+    }
+    // if no date slot, default to this week
+    else {
+      date = moment().day("Wednesday").format('YYYY-MM-DD');
+    }
+
     // speak the comic list
     getComicList(publisher, title, date, function(result) {
-      this.emit(':tell', result);
+      this.emit(':tell', 'For ' + date + ', ' + result);
     }.bind(this));
   },
   'AMAZON.HelpIntent': function() {
@@ -46,16 +56,8 @@ function getComicList(publisher, title, date, callback) {
   if (title && title.value) {
     url = addParam(url, 'title', title.value);
   }
-  if (date && date.value) {
-    var dateVal = date.value;
-    // if the date includes a W (i.e. W25), translate the week into date
-    if (dateVal.includes('W')) {
-      var i = dateVal.indexOf('W');
-      var week = dateVal.substring(i + 1, dateVal.length);
-      // comics are always released on Wednesday
-      dateVal = moment().day("Wednesday").week(week).format('YYYY-MM-DD');
-    }
-    url = addParam(url, 'release_date', dateVal);
+  if (date) {
+    url = addParam(url, 'release_date', date);
   }
 
   https.get(url, function(res) {
@@ -119,12 +121,22 @@ var addParam = function(base, key, value) {
   return base + sep + key + '=' + value;
 }
 
-// this is where all the magic starts
+// translate the week into a date
+function translateDate(date) {
+  // if the date includes a W (i.e. W25), translate the week into date
+  if (date.includes('W')) {
+    var i = date.indexOf('W');
+    var week = date.substring(i + 1, date.length);
+    // comics are always released on Wednesday
+    date = moment().day("Wednesday").week(week).format('YYYY-MM-DD');
+  }
+  return date;
+}
+
+// this is where all the magic happens
 exports.handler = function(event, context) {
   const alexa = Alexa.handler(event, context);
   alexa.APP_ID = APP_ID;
-  // To enable string internationalization (i18n) features, set a resources object.
-  //alexa.resources = languageStrings;
   alexa.registerHandlers(handlers);
   alexa.execute();
 };
