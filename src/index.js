@@ -22,15 +22,16 @@ const handlers = {
     var title = this.event.request.intent.slots.title;
     var date = this.event.request.intent.slots.date;
 
-    // do date translating (i.e. convert week number)
+    // date translating (i.e. convert week number to date)
     if (date && date.value) {
       date = translateDate(date.value);
-      // no support for searchs by month or year only, etc.
+      // no support for searches by month or year, yet
       if (!moment(date, 'YYYY-MM-DD', true).isValid()) {
         this.emit(':tell', INVALID_DATE_MESSAGE);
       }
     }
     // if no date slot, default to this week
+    // comics are always released on Wednesday
     else {
       date = moment().day("Wednesday").format('YYYY-MM-DD');
     }
